@@ -8,7 +8,6 @@ set nocompatible
 set cursorline
 set hidden
 set wrap
-" set paste
 set ruler
 
 " Set encoding
@@ -37,6 +36,21 @@ set laststatus=2
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+
+" Scrolling
+set scrolloff=8
+set sidescrolloff=15
+set sidescroll=1
+
+" Turn Off Swap Files
+set noswapfile
+set nobackup
+set nowb
+
+" Persistent Undo
+silent !mkdir ~/.vimbackups > /dev/null 2>&1
+set undodir=~/.vimbackups
+set undofile
 
 " Remember last location in file
 if has("autocmd")
@@ -109,8 +123,18 @@ imap <C-t> <%= t('') %><Esc>F'i
 nmap <leader>j :% !json_xs -f json -t json-pretty<CR>
 nmap <leader>x :% !xmllint % --format<CR>
 nmap <leader>h :% !tidy -q -i -w 0 %<CR>
-nmap <leader>l xepldf>
+nmap <leader>l xhepldf>
 nmap <leader>g :GundoToggle<CR>
+
+" function! s:RspecCurrentFile()
+"   silent !tmux send-keys -t:.+ "rspec %" ^M
+"   redraw!
+" endfunction
+" nmap <leader>t call s:RspecCurrentFile<CR>
+
+" easier tab navigation
+map th :tabp<CR>
+map tl :tabn<CR>
 
 " easier navigation between split windows
 nnoremap <c-j> <c-w>j
@@ -120,16 +144,16 @@ nnoremap <c-l> <c-w>l
 
 if has("autocmd")
   " Edit schema.rb
-  autocmd User BufEnterRails command! Rschema :Redit db/schema.rb
-  autocmd User BufEnterRails command! RTschema :RTedit db/schema.rb
+  autocmd User BufEnterRails command! Rschema :R db/schema.rb
+  autocmd User BufEnterRails command! RTschema :RT db/schema.rb
 
   " Edit routes
-  autocmd User BufEnterRails command! Rroutes :Redit config/routes.rb
-  autocmd User BufEnterRails command! RTroutes :RTedit config/routes.rb
+  autocmd User BufEnterRails command! Rroutes :R config/routes.rb
+  autocmd User BufEnterRails command! RTroutes :RT config/routes.rb
 
   " Edit database.yml
-  autocmd User BufEnterRails command! Rdatabase :Redit config/database.yml
-  autocmd User BufEnterRails command! RTdatabase :RTedit config/database.yml
+  autocmd User BufEnterRails command! Rdatabase :R config/database.yml
+  autocmd User BufEnterRails command! RTdatabase :RT config/database.yml
 
   " Edit factories
   autocmd User BufEnterRails Rnavcommand factory spec/factories -glob=* -suffix=.rb -default=model()
