@@ -1,7 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =5
-let g:netrw_dirhist_1='/Users/jacob/Code/EnvyLabs/envylabs/build/ecosystem/articles/2014/rake-rule-tasks'
-let g:netrw_dirhist_2='/Users/jacob/Code/RailsDiff-ember/bower_components/prism/themes'
-let g:netrw_dirhist_3='/Users/jacob/Dropbox/dotfiles'
-let g:netrw_dirhist_4='/Users/jacob/Code/Cisco/telnet/config'
-let g:netrw_dirhist_5='/Users/jacob/Code/heroku-buildpack/bin'
