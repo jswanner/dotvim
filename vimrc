@@ -1,4 +1,8 @@
 call pathogen#infect()
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup
+" set rtp+=/Users/jacob/Library/Python/2.7/lib/python/site-packages/powerline/bindings/vim
 
 syntax on
 filetype plugin indent on
@@ -9,17 +13,18 @@ set cursorline
 set hidden
 set wrap
 set ruler
+set noshowmode
 
 " Set encoding
 set encoding=utf-8
 
 " Whitespace stuff
-set nowrap
+set wrap
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
-set list listchars=tab:>-,trail:.
+set list listchars=tab:\ \ ,trail:.
 
 " Searching
 set hlsearch
@@ -76,6 +81,8 @@ au FileType python set noexpandtab
 " Thorfile, Rakefile and Gemfile are Ruby
 au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru,Guardfile} set ft=ruby
 
+au FileType ruby set kp=ri
+
 " md, markdown, and mk are markdown and define buffer-local preview
 au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
 
@@ -124,7 +131,11 @@ nmap <leader>j :% !json_xs -f json -t json-pretty<CR>
 nmap <leader>x :% !xmllint % --format<CR>
 nmap <leader>h :% !tidy -q -i -w 0 %<CR>
 nmap <leader>l xhepldf>
+nmap <leader>r ilet(:^[ea) {^[ldf=A }^[j^
 nmap <leader>g :GundoToggle<CR>
+nmap <silent> <leader>w :call <SID>StripTrailingWhitespaces()<CR>
+vmap <silent> <leader>s :sort<CR>
+nnoremap <leader>A :Ack "\b<cword>\b"<CR>
 
 " function! s:RspecCurrentFile()
 "   silent !tmux send-keys -t:.+ "rspec %" ^M
@@ -154,10 +165,25 @@ if has("autocmd")
   " Edit database.yml
   autocmd User BufEnterRails command! Rdatabase :R config/database.yml
   autocmd User BufEnterRails command! RTdatabase :RT config/database.yml
-
-  " Edit factories
-  autocmd User BufEnterRails Rnavcommand factory spec/factories -glob=* -suffix=.rb -default=model()
 endif
+
+let g:rails_projections = {
+      \ "config/projections.json": {
+      \   "command": "projections"
+      \ }}
+
+let g:rails_gem_projections = {
+      \ "factory_girl_rails": {
+      \   "spec/factories/*.rb": {
+      \     "command":   "factory",
+      \     "affinity":  "collection",
+      \     "alternate": "app/models/%i.rb",
+      \     "related":   "db/schema.rb#%s",
+      \     "test":      "spec/models/%i_test.rb",
+      \     "template":  "FactoryGirl.define do\n  factory :%i do\n  end\nend",
+      \     "keywords":  "factory sequence"
+      \   }
+      \ }}
 
 " Strip trailing whitespace
 function! <SID>StripTrailingWhitespaces()
@@ -171,9 +197,9 @@ function! <SID>StripTrailingWhitespaces()
     let @/=_s
     call cursor(l, c)
 endfunction
-if has("autocmd")
-  autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
-endif
+" if has("autocmd")
+"   autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
+" endif
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 if has("autocmd")
@@ -196,3 +222,23 @@ function! s:ToggleWhitespaceMatch(mode)
     let w:whitespace_match_number =  matchadd('ExtraWhitespace', pattern)
   endif
 endfunction
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Ack configuration
+  let g:ackprg = 'ag --nogroup --nocolor --column'
+
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+endif
+
+" See: https://github.com/fatih/vim-go#settings
+" let g:go_fmt_fail_silently = 1
+let g:go_fmt_command = "goimports"
+" let g:go_fmt_options = "-w"
+
+" Enable vim-mustache-handlebars abbreviations
+let g:mustache_abbreviations = 1
