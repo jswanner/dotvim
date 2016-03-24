@@ -2,7 +2,6 @@ call pathogen#infect()
 python from powerline.vim import setup as powerline_setup
 python powerline_setup()
 python del powerline_setup
-" set rtp+=/Users/jacob/Library/Python/2.7/lib/python/site-packages/powerline/bindings/vim
 
 syntax on
 filetype plugin indent on
@@ -63,17 +62,6 @@ if has("autocmd")
     \| exe "normal g'\"" | endif
 endif
 
-function s:setupWrapping()
-  set wrap
-  set wm=2
-  set textwidth=72
-endfunction
-
-function s:setupMarkup()
-  call s:setupWrapping()
-  map <buffer> <Leader>p :Mm <CR>
-endfunction
-
 " make and python use real tabs
 au FileType make set noexpandtab
 au FileType python set noexpandtab
@@ -83,10 +71,8 @@ au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru,Guardfile} set ft=rub
 
 au FileType ruby set kp=ri
 
-" md, markdown, and mk are markdown and define buffer-local preview
-au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
-
-au BufRead,BufNewFile *.txt call s:setupWrapping()
+" Enable spell checking for git commit messages
+au FileType gitcommit set spell
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -117,7 +103,7 @@ let g:syntastic_quiet_warnings=1
 
 " Use modeline overrides
 set modeline
-set modelines=10
+set modelines=2
 
 " Default color scheme
 set background=light
@@ -127,25 +113,15 @@ map <F1> <Esc>
 imap <F1> <Esc>
 imap <C-l> <Space>=><Space>
 imap <C-t> <%= t('') %><Esc>F'i
-nmap <leader>j :% !json_xs -f json -t json-pretty<CR>
-nmap <leader>x :% !xmllint % --format<CR>
-nmap <leader>h :% !tidy -q -i -w 0 %<CR>
-nmap <leader>l xhepldf>
-nmap <leader>r ilet(:^[ea) {^[ldf=A }^[j^
-nmap <leader>g :GundoToggle<CR>
-nmap <silent> <leader>w :call <SID>StripTrailingWhitespaces()<CR>
-vmap <silent> <leader>s :sort<CR>
+nnoremap <silent> <leader>j :% !jq '.'<CR>
+nnoremap <silent> <leader>x :% !xmllint % --format<CR>
+nnoremap <silent> <leader>h :% !tidy -q -i -w 0 %<CR>
+nnoremap <leader>l xhepldf>
+nnoremap <leader>r ^ilet(:<ESC>ea) {<ESC>ldf=A }<ESC>
+nnoremap <leader>g :GundoToggle<CR>
+nnoremap <silent> <leader>w :call <SID>StripTrailingWhitespaces()<CR>
+vnoremap <silent> <leader>s :sort<CR>
 nnoremap <leader>A :Ack "\b<cword>\b"<CR>
-
-" function! s:RspecCurrentFile()
-"   silent !tmux send-keys -t:.+ "rspec %" ^M
-"   redraw!
-" endfunction
-" nmap <leader>t call s:RspecCurrentFile<CR>
-
-" easier tab navigation
-map th :tabp<CR>
-map tl :tabn<CR>
 
 " easier navigation between split windows
 nnoremap <c-j> <c-w>j
@@ -197,9 +173,6 @@ function! <SID>StripTrailingWhitespaces()
     let @/=_s
     call cursor(l, c)
 endfunction
-" if has("autocmd")
-"   autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
-" endif
 
 highlight ExtraWhitespace ctermbg=red guibg=red
 if has("autocmd")
